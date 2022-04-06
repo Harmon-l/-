@@ -9,8 +9,6 @@ TRAIN_LABEL = "train-labels-idx1-ubyte"
 TEST_DATA = "t10k-images-idx3-ubyte"
 TEST_LABEL = "t10k-labels-idx1-ubyte"
 
-# https://zhuanlan.zhihu.com/p/381987920/
-# https://blog.csdn.net/Defiler_Lee/article/details/112466614
 
 np.random.seed(123)
 EPOCH = 50
