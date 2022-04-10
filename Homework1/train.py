@@ -1,6 +1,7 @@
 import numpy as np
 import struct
 import os
+import xlwt
 from tensorboardX import SummaryWriter
 
 MNIST_DIR = r"D:/机器学习与神经网络导论/机器学习上机课材料/mnist/MNIST/MNIST/raw"
@@ -9,11 +10,17 @@ TRAIN_LABEL = "train-labels-idx1-ubyte"
 TEST_DATA = "t10k-images-idx3-ubyte"
 TEST_LABEL = "t10k-labels-idx1-ubyte"
 
-# https://zhuanlan.zhihu.com/p/381987920/
-# https://blog.csdn.net/Defiler_Lee/article/details/112466614
+book = xlwt.Workbook(encoding='utf-8',style_compression=0)
+sheet = book.add_sheet('超参数',cell_overwrite_ok=True)
+col = ('学习率','隐藏层','正则化系数','accuracy')
+
+for i in range(4):
+    sheet.write(0,i,col[i])
+
+
 
 np.random.seed(123)
-EPOCH = 50
+EPOCH = 10
 BATCHSIZE = 128
 
 
@@ -196,14 +203,15 @@ writer = SummaryWriter()
 
 def train():
     print('Start training...')
-    # lr_scale = [0.001, 0.005, 0.007, 0.01, 0.05]
-    lr_scale = [0.01]
-    # hidden_num = [64, 128, 256]
-    hidden_num = [256]
-    # alpha_scale = [0, 0.0001, 0.0003, 0.001]
-    alpha_scale = [0.0001]
+    lr_scale = [0.001, 0.005, 0.007, 0.01, 0.05, 0.1]
+    # lr_scale = [0.05]
+    hidden_num = [64, 128, 256]
+    # hidden_num = [256]
+    alpha_scale = [0, 0.0001, 0.0003, 0.001]
+    # alpha_scale = [0.0001]
     best_lr, best_hidden, best_alpha, best_acc, best_epoch = 0,0,0,0,0
     max_batch = train_data.shape[0] // BATCHSIZE
+    k = 1
     for lr in lr_scale:
         for hidden in hidden_num:
             for alpha in alpha_scale:
@@ -244,6 +252,14 @@ def train():
                     if test_acc > best_acc:
                         best_acc, best_lr, best_hidden, best_alpha, best_epoch = test_acc, lr, hidden, alpha, epoch
                         net.save_model('mlp_1.npy')
+
+                param = [lr, hidden, alpha, test_acc]
+                for i in range(4):
+                    sheet.write(k,i,param[i])
+                print(k)
+                k += 1
+
+    book.save('param1.xls')
     print('best_lr: ', best_lr, 'best_hidden: ', best_hidden, 'best_alpha: ', best_alpha, 'best_epoch: ', best_epoch,' best_acc: ', best_acc)
 
 
